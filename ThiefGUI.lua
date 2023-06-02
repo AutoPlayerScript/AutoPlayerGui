@@ -915,7 +915,7 @@ end)
 	TweenService:Create(ExtraBar, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
 	TweenService:Create(TitleShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(TitleText, TweenInfo.new(1), {TextTransparency = 0}):Play()
-	TweenService:Create(MinimiseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
+	--TweenService:Create(MinimiseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(MinimiseShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(Content, TweenInfo.new(1), {ImageTransparency = 0.8}):Play()
 
