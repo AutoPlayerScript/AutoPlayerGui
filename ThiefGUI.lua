@@ -845,43 +845,46 @@ function Material.Load(Config)
 
 	----------------------------------------------------
 	local MinimiseButton = Objects.new("SmoothButton")
-MinimiseButton.Size = UDim2.fromOffset(20, 20)
-MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MinimiseButton.ImageColor3 = Theme.Minimise
-MinimiseButton.ImageTransparency = 1
-MinimiseButton.Parent = TitleBar
+	MinimiseButton.Size = UDim2.fromOffset(20, 20)
+	MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
+	MinimiseButton.ImageColor3 = Theme.Minimise
+	MinimiseButton.ImageTransparency = 1
+	MinimiseButton.Parent = TitleBar
 
-local MinimiseShadow = Objects.new("Shadow")
-MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
-MinimiseShadow.ImageTransparency = 1
-MinimiseShadow.Parent = MinimiseButton
+	local MinimiseShadow = Objects.new("Shadow")
+	MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
+	MinimiseShadow.ImageTransparency = 1
+	MinimiseShadow.Parent = MinimiseButton
 
-MinimiseButton.MouseButton1Down:Connect(function()
-  Open = not Open
-  TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
-  TweenService:Create(MainFrame, TweenInfo.new(0.15), {
-    Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)
-  }):Play()
-  TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {
-    ImageColor3 = Open and Theme.Minimise or Theme.Maximise
-  }):Play()
-  TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {
-    ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent
-  }):Play()
-  if Open then
-    wait(0.15)
-    MainFrame.ClipsDescendants = false
-    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
-  else
-    MainFrame.ClipsDescendants = true
-    -- Hide all the contents of the window, except for the minimize button
-    for _, child in pairs(MainFrame:GetChildren()) do
-      if child ~= MinimiseButton then
-        child.Visible = false
-      end
-    end
-  end
-end)
+	MinimiseButton.MouseButton1Down:Connect(function()
+	  Open = not Open
+	  TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+	  TweenService:Create(MainFrame, TweenInfo.new(0.15), {
+	    Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)
+	  }):Play()
+	  TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {
+	    ImageColor3 = Open and Theme.Minimise or Theme.Maximise
+	  }):Play()
+	  TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {
+	    ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent
+	  }):Play()
+	  if Open then
+	    wait(0.15)
+	    MainFrame.ClipsDescendants = false
+	    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
+	  else
+	    MainFrame.ClipsDescendants = true
+	    -- Hide all the contents of the window, except for the minimize button
+	    for _, child in pairs(MainFrame:GetChildren()) do
+	      if child ~= MinimiseButton then
+		child.Visible = false
+	      end
+	    end
+	    -- Hide the TitleBar
+	    local TitleBar = MainFrame.Parent
+	    TitleBar.Visible = false
+	  end
+	end)
 --------------------------------------------------------------
 
 	local Content = Objects.new("Round")
