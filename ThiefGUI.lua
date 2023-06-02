@@ -844,56 +844,32 @@ function Material.Load(Config)
 	end)
 
 	----------------------------------------------------
-	local MinimizeButton = Objects.new("SmoothButton")
-MinimizeButton.Size = UDim2.fromOffset(20, 20)
-MinimizeButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MinimizeButton.ImageColor3 = Theme.Minimise
-MinimizeButton.ImageTransparency = 1
-MinimizeButton.Parent = MainFrame
+	local MinimiseButton = Objects.new("SmoothButton")
+	MinimiseButton.Size = UDim2.fromOffset(20,20)
+	MinimiseButton.Position = UDim2.fromScale(1,0) + UDim2.fromOffset(-25,5)
+	MinimiseButton.ImageColor3 = Theme.Minimise
+	MinimiseButton.ImageTransparency = 1
+	MinimiseButton.Parent = TitleBar
 
-local MinimizeShadow = Objects.new("Shadow")
-MinimizeShadow.ImageColor3 = Theme.MinimiseAccent
-MinimizeShadow.ImageTransparency = 1
-MinimizeShadow.Parent = MinimizeButton
+	local MinimiseShadow = Objects.new("Shadow")
+	MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
+	MinimiseShadow.ImageTransparency = 1
+	MinimiseShadow.Parent = MinimiseButton
 
-local MaximizeButton = Objects.new("SmoothButton")
-MaximizeButton.Size = UDim2.fromOffset(20, 20)
-MaximizeButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MaximizeButton.ImageColor3 = Theme.Maximise
-MaximizeButton.ImageTransparency = 1
-MaximizeButton.Visible = false
-MaximizeButton.Parent = MainFrame
-
-local MaximizeShadow = Objects.new("Shadow")
-MaximizeShadow.ImageColor3 = Theme.MaximiseAccent
-MaximizeShadow.ImageTransparency = 1
-MaximizeShadow.Parent = MaximizeButton
-
-MinimizeButton.MouseButton1Down:Connect(function()
-    if TitleBar.Visible then
-        TitleBar.Visible = false
-        MainFrame.ClipsDescendants = true
-        TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Maximise}):Play()
-        TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MaximiseAccent}):Play()
-        MaximizeButton.Visible = true
-    else
-        TitleBar.Visible = true
-        MainFrame.ClipsDescendants = false
-        TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
-        TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
-        MaximizeButton.Visible = false
-    end
-end)
-
-MaximizeButton.MouseButton1Down:Connect(function()
-    TitleBar.Visible = true
-    MainFrame.ClipsDescendants = false
-    TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
-    TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
-    MaximizeButton.Visible = false
-end)
-
-----------------------------------------------------------------------------------------------------------------------------------------------------
+	MinimiseButton.MouseButton1Down:Connect(function()
+		Open = not Open
+		TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+		TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX,SizeY) or UDim2.fromOffset(SizeX,30)}):Play()
+		TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
+		TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
+		if Open then
+			wait(0.15)
+			MainFrame.ClipsDescendants = false
+			TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
+		else
+			MainFrame.ClipsDescendants = true
+		end
+	end)
 
 	local Content = Objects.new("Round")
 	Content.Name = "Content"
