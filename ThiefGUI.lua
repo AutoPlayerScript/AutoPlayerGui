@@ -871,9 +871,6 @@ local MinimiseButton = Objects.new("SmoothButton")
 		end
 	end)
 
-
-
------------------------------------------------------------------------------------------------------------------------------------------------------------
 	local Content = Objects.new("Round")
 	Content.Name = "Content"
 	Content.ImageColor3 = Theme.Content
@@ -926,6 +923,7 @@ local MinimiseButton = Objects.new("SmoothButton")
 			end
 		end)
 	end
+	------------------------------------------------------------------------
 	local TabCount = 0
 
 	local TabLibrary = {}
