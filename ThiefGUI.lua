@@ -845,59 +845,31 @@ function Material.Load(Config)
 
 	----------------------------
 local MinimiseButton = Objects.new("SmoothButton")
-MinimiseButton.Size = UDim2.fromOffset(20, 20)
-MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MinimiseButton.ImageColor3 = Theme.Minimise
-MinimiseButton.ImageTransparency = 1
-MinimiseButton.Parent = TitleBar
+	MinimiseButton.Size = UDim2.fromOffset(20,20)
+	MinimiseButton.Position = UDim2.fromScale(1,0) + UDim2.fromOffset(-25,5)
+	MinimiseButton.ImageColor3 = Theme.Minimise
+	MinimiseButton.ImageTransparency = 1
+	MinimiseButton.Parent = TitleBar
 
-local MinimiseShadow = Objects.new("Shadow")
-MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
-MinimiseShadow.ImageTransparency = 1
-MinimiseShadow.Parent = MinimiseButton
+	local MinimiseShadow = Objects.new("Shadow")
+	MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
+	MinimiseShadow.ImageTransparency = 1
+	MinimiseShadow.Parent = MinimiseButton
 
-local GUIVisible = true
-
-MinimiseButton.MouseButton1Down:Connect(function()
-    GUIVisible = not GUIVisible
-
-    TweenService:Create(MainFrame, TweenInfo.new(0.15), {
-        Size = GUIVisible and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)
-    }):Play()
-
-    TweenService:Create(Content, TweenInfo.new(0.15), {
-        ImageTransparency = GUIVisible and 0.8 or 1
-    }):Play()
-
-    TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {
-        ImageColor3 = GUIVisible and Theme.Minimise or Theme.Maximise
-    }):Play()
-
-    TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {
-        ImageColor3 = GUIVisible and Theme.MinimiseAccent or Theme.MaximiseAccent
-    }):Play()
-
-    if GUIVisible then
-        wait(0.15)
-        MainFrame.ClipsDescendants = false
-        TweenService:Create(MainShadow, TweenInfo.new(0.15), {
-            ImageTransparency = 0
-        }):Play()
-    else
-        MainFrame.ClipsDescendants = true
-    end
-
-    -- Ẩn các thành phần khác
-    TitleBar.Visible = GUIVisible
-    ExtraBar.Visible = GUIVisible
-    TitleShadow.Visible = GUIVisible
-    TitleText.Visible = GUIVisible
-    Content.Visible = GUIVisible
-    if NavBarMenu then
-        NavBarMenu.Visible = GUIVisible
-        NavBarOverlay.Visible = GUIVisible
-    end
-end)
+	MinimiseButton.MouseButton1Down:Connect(function()
+		Open = not Open
+		TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+		TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX,SizeY) or UDim2.fromOffset(SizeX,30)}):Play()
+		TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
+		TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
+		if Open then
+			wait(0.15)
+			MainFrame.ClipsDescendants = false
+			TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
+		else
+			MainFrame.ClipsDescendants = true
+		end
+	end)
 
 
 
