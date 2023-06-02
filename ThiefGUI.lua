@@ -844,45 +844,45 @@ function Material.Load(Config)
 	end)
 
 	----------------------------------------------------
-	local MinimizeButton = Objects.new("SmoothButton")
-MinimizeButton.Size = UDim2.fromOffset(20, 20)
-MinimizeButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MinimizeButton.ImageColor3 = Theme.Minimise
-MinimizeButton.ImageTransparency = 1
-MinimizeButton.Parent = TitleBar
+	local MinimiseButton = Objects.new("SmoothButton")
+MinimiseButton.Size = UDim2.fromOffset(20, 20)
+MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
+MinimiseButton.ImageColor3 = Theme.Minimise
+MinimiseButton.ImageTransparency = 1
+MinimiseButton.Parent = TitleBar
 
-local MinimizeShadow = Objects.new("Shadow")
-MinimizeShadow.ImageColor3 = Theme.MinimiseAccent
-MinimizeShadow.ImageTransparency = 1
-MinimizeShadow.Parent = MinimizeButton
+local MinimiseShadow = Objects.new("Shadow")
+MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
+MinimiseShadow.ImageTransparency = 1
+MinimiseShadow.Parent = MinimiseButton
 
 local MaximizeButton = Objects.new("SmoothButton")
 MaximizeButton.Size = UDim2.fromOffset(20, 20)
 MaximizeButton.ImageColor3 = Theme.Maximise
 MaximizeButton.ImageTransparency = 1
 MaximizeButton.Visible = false
-MaximizeButton.Parent = MainFrame -- Đặt MaximizeButton là con của MainFrame thay vì TitleBar
+MaximizeButton.Parent = MainFrame
 
 local MaximizeShadow = Objects.new("Shadow")
 MaximizeShadow.ImageColor3 = Theme.MaximiseAccent
 MaximizeShadow.ImageTransparency = 1
 MaximizeShadow.Parent = MaximizeButton
 
-MinimizeButton.MouseButton1Down:Connect(function()
+MinimiseButton.MouseButton1Down:Connect(function()
     Open = not Open
     TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
     TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)}):Play()
-    TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
-    TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
+    TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
+    TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
 
     if Open then
         wait(0.15)
         MainFrame.ClipsDescendants = false
         TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
-        MaximizeButton.Visible = true -- Hiển thị nút Maximize khi TitleBar được mở
+        MaximizeButton.Visible = true
     else
         MainFrame.ClipsDescendants = true
-        MaximizeButton.Visible = false -- Ẩn nút Maximize khi TitleBar được ẩn
+        MaximizeButton.Visible = false
     end
 end)
 
@@ -890,11 +890,11 @@ MaximizeButton.MouseButton1Down:Connect(function()
     Open = true
     TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
     TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = UDim2.fromOffset(SizeX, SizeY)}):Play()
-    TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
-    TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
+    TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
+    TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
     MainFrame.ClipsDescendants = false
     TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
-    MaximizeButton.Visible = false -- Ẩn nút Maximize khi TitleBar được mở
+    MaximizeButton.Visible = false
 end)
 
 
@@ -915,7 +915,7 @@ end)
 	TweenService:Create(ExtraBar, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
 	TweenService:Create(TitleShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(TitleText, TweenInfo.new(1), {TextTransparency = 0}):Play()
-	--TweenService:Create(MinimiseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
+	TweenService:Create(MinimiseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(MinimiseShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
 	TweenService:Create(Content, TweenInfo.new(1), {ImageTransparency = 0.8}):Play()
 
