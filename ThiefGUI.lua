@@ -844,38 +844,59 @@ function Material.Load(Config)
 	end)
 
 	----------------------------------------------------
-	local MinimiseButton = Objects.new("SmoothButton")
-	MinimiseButton.Size = UDim2.fromOffset(20, 20)
-	MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-	MinimiseButton.ImageColor3 = Theme.Minimise
-	MinimiseButton.ImageTransparency = 1
-	MinimiseButton.Parent = TitleBar
+	local MinimizeButton = Objects.new("SmoothButton")
+MinimizeButton.Size = UDim2.fromOffset(20, 20)
+MinimizeButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
+MinimizeButton.ImageColor3 = Theme.Minimise
+MinimizeButton.ImageTransparency = 1
+MinimizeButton.Parent = TitleBar
 
-	local MinimiseShadow = Objects.new("Shadow")
-	MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
-	MinimiseShadow.ImageTransparency = 1
-	MinimiseShadow.Parent = MinimiseButton
+local MinimizeShadow = Objects.new("Shadow")
+MinimizeShadow.ImageColor3 = Theme.MinimiseAccent
+MinimizeShadow.ImageTransparency = 1
+MinimizeShadow.Parent = MinimizeButton
 
-	MinimiseButton.MouseButton1Down:Connect(function()
-	  Open = not Open
-	  TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
-	  TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)}):Play()
-	  TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
-	  TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
-	  if Open then
-	    wait(0.15)
-	    MainFrame.ClipsDescendants = false
-	    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
-	  else
-	    MainFrame.ClipsDescendants = true
-	  end
+local MaximizeButton = Objects.new("SmoothButton")
+MaximizeButton.Size = UDim2.fromOffset(20, 20)
+MaximizeButton.ImageColor3 = Theme.Maximise
+MaximizeButton.ImageTransparency = 1
+MaximizeButton.Visible = false
+MaximizeButton.Parent = MainFrame -- Đặt MaximizeButton là con của MainFrame thay vì TitleBar
 
-	  if MinimiseButton.Parent == TitleBar then
-	    return
-	  end
+local MaximizeShadow = Objects.new("Shadow")
+MaximizeShadow.ImageColor3 = Theme.MaximiseAccent
+MaximizeShadow.ImageTransparency = 1
+MaximizeShadow.Parent = MaximizeButton
 
-	  MinimiseButton.Parent.Parent:Minimize()
-	end)
+MinimizeButton.MouseButton1Down:Connect(function()
+    Open = not Open
+    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+    TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)}):Play()
+    TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
+    TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
+
+    if Open then
+        wait(0.15)
+        MainFrame.ClipsDescendants = false
+        TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
+        MaximizeButton.Visible = true -- Hiển thị nút Maximize khi TitleBar được mở
+    else
+        MainFrame.ClipsDescendants = true
+        MaximizeButton.Visible = false -- Ẩn nút Maximize khi TitleBar được ẩn
+    end
+end)
+
+MaximizeButton.MouseButton1Down:Connect(function()
+    Open = true
+    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
+    TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = UDim2.fromOffset(SizeX, SizeY)}):Play()
+    TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
+    TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
+    MainFrame.ClipsDescendants = false
+    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
+    MaximizeButton.Visible = false -- Ẩn nút Maximize khi TitleBar được mở
+end)
+
 
 --------------------------------------------------------------
 
