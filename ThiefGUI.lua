@@ -859,32 +859,24 @@ function Material.Load(Config)
 	MinimiseButton.MouseButton1Down:Connect(function()
 	  Open = not Open
 	  TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
-	  TweenService:Create(MainFrame, TweenInfo.new(0.15), {
-	    Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)
-	  }):Play()
-	  TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {
-	    ImageColor3 = Open and Theme.Minimise or Theme.Maximise
-	  }):Play()
-	  TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {
-	    ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent
-	  }):Play()
+	  TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)}):Play()
+	  TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
+	  TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
 	  if Open then
 	    wait(0.15)
 	    MainFrame.ClipsDescendants = false
 	    TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
 	  else
 	    MainFrame.ClipsDescendants = true
-	    -- Hide all the contents of the window, except for the minimize button
-	    for _, child in pairs(MainFrame:GetChildren()) do
-	      if child ~= MinimiseButton then
-		child.Visible = false
-	      end
-	    end
-	    -- Hide the TitleBar
-	    local TitleBar = MainFrame.Parent
-	    TitleBar.Visible = false
 	  end
+
+	  if MinimiseButton.Parent == TitleBar then
+	    return
+	  end
+
+	  MinimiseButton.Parent.Parent:Minimize()
 	end)
+
 --------------------------------------------------------------
 
 	local Content = Objects.new("Round")
