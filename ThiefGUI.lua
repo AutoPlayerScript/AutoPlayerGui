@@ -1174,7 +1174,7 @@ function Material.Load(Config)
 			return ButtonLibrary
 		end
 --------------------------------------------------------------------------------------------------------------
-function OptionLibrary.Dropdown(DropdownConfig)
+		function OptionLibrary.DropdownSearch(DropdownConfig)
     local DropdownText = DropdownConfig.Text or "nil dropdown"
     local DropdownValue = DropdownConfig.Default
     local DropdownCallback = DropdownConfig.Callback or function() print("nil dropdown") end
@@ -1193,7 +1193,16 @@ function OptionLibrary.Dropdown(DropdownConfig)
     DropdownBar.ImageTransparency = 1
     DropdownBar.Parent = Dropdown
 
-    local DropdownTitle = Objects.new("TextBox")
+    local SearchBox = Objects.new("TextBox")  -- Tạo TextBox cho tìm kiếm
+    SearchBox.Name = "SearchBox"
+    SearchBox.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
+    SearchBox.Position = UDim2.fromOffset(5, 5)
+    SearchBox.BackgroundTransparency = 1
+    SearchBox.Text = ""
+    SearchBox.PlaceholderText = "Search"
+    SearchBox.Parent = DropdownBar
+
+    local DropdownTitle = Objects.new("Button")
     DropdownTitle.Name = "Title"
     DropdownTitle.Font = Enum.Font.GothamSemibold
     DropdownTitle.Text = DropdownValue and DropdownText..": "..DropdownValue or DropdownText
@@ -1207,7 +1216,7 @@ function OptionLibrary.Dropdown(DropdownConfig)
     DropdownToggle.Size = UDim2.fromOffset(24,24)
     DropdownToggle.Position = UDim2.fromScale(1,0.5) - UDim2.fromOffset(27,12)
     DropdownToggle.ImageColor3 = Theme.DropdownAccent
-    DropdownToggle.ImageTransparency = 1
+    DropdownToggle.ImageTransparency = 1 -- 0.8
     DropdownToggle.Parent = DropdownBar
 
     local DropdownButton = Objects.new("Round")
@@ -1220,11 +1229,6 @@ function OptionLibrary.Dropdown(DropdownConfig)
     DropdownButton.ImageTransparency = 1
     DropdownButton.Parent = DropdownToggle
 
-    TweenService:Create(DropdownBar, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
-    TweenService:Create(DropdownTitle, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    TweenService:Create(DropdownToggle, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
-    TweenService:Create(DropdownButton, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
-
     local DropdownContent = Objects.new("Frame")
     DropdownContent.Name = "Content"
     DropdownContent.Size = UDim2.fromScale(1,0)
@@ -1234,112 +1238,243 @@ function OptionLibrary.Dropdown(DropdownConfig)
 
     local NumberOfOptions = #DropdownOptions
     local DropToggle = false
-    local DropdownSize = UDim2.fromScale(1,0) + UDim2.fromOffset(0,(NumberOfOptions*20) + ((NumberOfOptions - 1) * 5))
+    local DropdownSize = UDim2.fromScale(1,0) + UDim2.fromOffset(0,35 + (20 * NumberOfOptions))
 
-    local DropdownList = Objects.new("UIListLayout")
-    DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
-    DropdownList.Padding = UDim.new(0,5)
-    DropdownList.Parent = DropdownContent
-
-    DropdownList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    DropdownToggle.MouseButton1Click:Connect(function()
         if DropToggle then
-            DropdownContent.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(DropdownList.AbsoluteContentSize.Y)
-            DropdownSize = UDim2.fromScale(1,0) + UDim2.fromOffset(DropdownList.AbsoluteContentSize.Y)
+            Dropdown.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,30)
+            DropdownBar.ImageTransparency = 1
+            DropdownToggle.ImageTransparency = 1 -- 0.8
+            DropdownToggle.Rotation = 0
+            DropdownContent.Size = UDim2.fromScale(1,0)
+        else
+            Dropdown.Size = DropdownSize
+            DropdownBar.ImageTransparency = 0
+            DropdownToggle.ImageTransparency = 0 -- 0.8
+            DropdownToggle.Rotation = 180
+            DropdownContent.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20 * NumberOfOptions)
         end
+        DropToggle = not DropToggle
     end)
 
-    local FilteredOptions = DropdownOptions
+    local function CreateNewButton(ButtonConfig, Parent)
+        local Button = Objects.new("Button")
+        Button.Name = ButtonConfig.Text or "nil button"
+        Button.Font = Enum.Font.GothamSemibold
+        Button.Text = ButtonConfig.Text or "nil button"
+        Button.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
+        Button.Position = UDim2.fromOffset(0,20 * #Parent:GetChildren())
+        Button.TextColor3 = Theme.DropdownText
+        Button.TextSize = 14
+        Button.BackgroundTransparency = 1
+        Button.Parent = Parent
 
-    local function RefreshDropdownList()
-        for _, button in ipairs(DropdownContent:GetChildren()) do
-            if button:IsA("TextButton") then
-                button:Destroy()
+        Button.MouseButton1Click:Connect(function()
+            ButtonConfig.Callback()
+            DropdownCallback(ButtonConfig.Text)
+            DropdownTitle.Text = DropdownText..": "..ButtonConfig.Text
+            DropdownValue = ButtonConfig.Text
+        end)
+
+        return Button
+    end
+
+    -- Thêm sự kiện lắng nghe khi thay đổi giá trị trong TextBox tìm kiếm
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        local searchText = SearchBox.Text
+        -- Lọc danh sách DropdownOptions dựa trên giá trị tìm kiếm
+        local filteredOptions = {}
+        for _, option in ipairs(DropdownOptions) do
+            if option:lower():find(searchText:lower()) then
+                table.insert(filteredOptions, option)
             end
         end
-
-        for _, value in ipairs(FilteredOptions) do
+        -- Xóa hết các Button cũ trong DropdownContent
+        for _, button in ipairs(DropdownContent:GetChildren()) do
+            button:Destroy()
+        end
+        -- Tạo lại Button cho các option đã lọc
+        for _, value in ipairs(filteredOptions) do
             local NewButton = CreateNewButton({
                 Text = value,
-                Callback = function() end
-            }, DropdownContent)
-
-            NewButton.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
-            NewButton.MouseButton1Down:Connect(function()
-                DropdownCallback(value)
-                DropdownTitle.Text = DropdownText..": "..value
-                DropdownValue = value
-            end)
-        end
-    end
-
-    local SearchBox = Objects.new("TextBox")
-    SearchBox.Name = "SearchBox"
-    SearchBox.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
-    SearchBox.Position = UDim2.fromOffset(0, 35)
-    SearchBox.Font = Enum.Font.Gotham
-    SearchBox.TextColor3 = Theme.DropdownAccent
-    SearchBox.TextSize = 14
-    SearchBox.PlaceholderText = "Search..."
-    SearchBox.TextTransparency = 1
-    SearchBox.Parent = DropdownBar
-
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        local keyword = SearchBox.Text:lower()
-        if keyword == "" then
-            FilteredOptions = DropdownOptions
-        else
-            FilteredOptions = {}
-            for _, value in ipairs(DropdownOptions) do
-                if string.find(value:lower(), keyword) then
-                    table.insert(FilteredOptions, value)
+                Callback = function()
+                    DropdownCallback(value)
+                    DropdownTitle.Text = DropdownText..": "..value
+                    DropdownValue = value
                 end
-            end
+            }, DropdownContent)
+            NewButton.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
         end
-        RefreshDropdownList()
     end)
 
-    table.foreach(DropdownOptions, function(_, Value)
-        local NewButton = CreateNewButton({
-            Text = Value,
-            Callback = function() end
-        }, DropdownContent)
-
-        NewButton.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
-        NewButton.MouseButton1Down:Connect(function()
-            DropdownCallback(Value)
-            DropdownTitle.Text = DropdownText..": "..Value
-            DropdownValue = Value
-        end)
-    end)
-
-    DropdownTitle.MouseButton1Down:Connect(function()
-        DropToggle = not DropToggle
-        TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
-        TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and DropdownSize or UDim2.fromScale(1,0)}):Play()
-        TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (DropdownSize + UDim2.fromOffset(0,35)) or (UDim2.fromScale(1,0) + UDim2.fromOffset(0,30))}):Play()
-    end)
-
-    local MenuAdded, MenuButton = TryAddMenu(DropdownBar, Menu, {})
-
-    if MenuAdded then
-        DropdownToggle.Position = DropdownToggle.Position - UDim2.fromOffset(25,0)
-        MenuButton.ImageColor3 = Theme.DropdownAccent
-    end
-
-    local DropdownLibrary = {}
-
-    function DropdownLibrary:SetText(Value)
-        DropdownTitle.Text = Value
-    end
-
-    function DropdownLibrary:GetText()
-        return DropdownTitle.Text
-    end
-
-    return DropdownLibrary
+    return Dropdown
 end
 
------------------------------------------
+		---------------------------------------------
+function OptionLibrary.Dropdown(DropdownConfig)
+			local DropdownText = DropdownConfig.Text or "nil dropdown"
+            local DropdownValue = DropdownConfig.Default
+			local DropdownCallback = DropdownConfig.Callback or function() print("nil dropdown") end
+			local DropdownOptions = DropdownConfig.Options or {}
+			local Menu = DropdownConfig.Menu or {}
+
+			local Dropdown = Objects.new("Frame")
+			Dropdown.Name = "Dropdown"
+			Dropdown.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,30)
+			Dropdown.Parent = PageContentFrame
+
+			local DropdownBar = Objects.new("Round")
+			DropdownBar.Name = "TitleBar"
+			DropdownBar.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,30)
+			DropdownBar.ImageColor3 = Theme.Dropdown
+			DropdownBar.ImageTransparency = 1
+			DropdownBar.Parent = Dropdown
+
+			local DropdownTitle = Objects.new("Button")
+			DropdownTitle.Name = "Title"
+			DropdownTitle.Font = Enum.Font.GothamSemibold
+			DropdownTitle.Text = DropdownValue and DropdownText..": "..DropdownValue or DropdownText
+			DropdownTitle.TextColor3 = Theme.DropdownAccent
+			DropdownTitle.TextTransparency = 1
+			DropdownTitle.TextSize = 14
+			DropdownTitle.Parent = DropdownBar
+
+			local DropdownToggle = Objects.new("Round")
+			DropdownToggle.Name = "Container"
+			DropdownToggle.Size = UDim2.fromOffset(24,24)
+			DropdownToggle.Position = UDim2.fromScale(1,0.5) - UDim2.fromOffset(27,12)
+			DropdownToggle.ImageColor3 = Theme.DropdownAccent
+			DropdownToggle.ImageTransparency = 1 -- 0.8
+			DropdownToggle.Parent = DropdownBar
+
+			local DropdownButton = Objects.new("Round")
+			DropdownButton.Name = "Drop"
+			DropdownButton.Image = "rbxassetid://5574299686"
+			DropdownButton.ScaleType = Enum.ScaleType.Stretch
+			DropdownButton.Size = UDim2.fromScale(1,1) - UDim2.fromOffset(4,4)
+			DropdownButton.Position = UDim2.fromOffset(2,2)
+			DropdownButton.ImageColor3 = Theme.DropdownAccent
+			DropdownButton.ImageTransparency = 1
+			DropdownButton.Parent = DropdownToggle
+
+			TweenService:Create(DropdownBar, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+			TweenService:Create(DropdownTitle, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
+			TweenService:Create(DropdownToggle, TweenInfo.new(0.5), {ImageTransparency = 0.8}):Play()
+			TweenService:Create(DropdownButton, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+
+			local DropdownContent = Objects.new("Frame")
+			DropdownContent.Name = "Content"
+			DropdownContent.Size = UDim2.fromScale(1,0)
+			DropdownContent.Position = UDim2.fromOffset(0,35)
+			DropdownContent.ClipsDescendants = true
+			DropdownContent.Parent = Dropdown
+
+			local NumberOfOptions = #DropdownOptions
+			local DropToggle = false
+			local DropdownSize = UDim2.fromScale(1,0) + UDim2.fromOffset(0,(NumberOfOptions*20) + ((NumberOfOptions - 1) * 5))
+
+			local DropdownList = Objects.new("UIListLayout")
+			DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
+			DropdownList.Padding = UDim.new(0,5)
+			DropdownList.Parent = DropdownContent
+
+			DropdownList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+				if DropToggle then
+					DropdownContent.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(DropdownList.AbsoluteContentSize.Y)
+					DropdownSize = UDim2.fromScale(1,0) + UDim2.fromOffset(DropdownList.AbsoluteContentSize.Y)
+				end
+			end)
+
+			table.foreach(DropdownOptions, function(_, Value)
+				local NewButton = CreateNewButton({
+					Text = Value,
+					Callback = function() end
+				}, DropdownContent)
+
+				NewButton.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
+				NewButton.MouseButton1Down:Connect(function()
+					DropdownCallback(Value)
+					DropdownTitle.Text = DropdownText..": "..Value
+                    DropdownValue = Value
+				end)
+			end)
+
+			DropdownTitle.MouseButton1Down:Connect(function()
+				DropToggle = not DropToggle
+				TweenService:Create(DropdownButton, TweenInfo.new(0.15), {Rotation = DropToggle and 135 or 0}):Play()
+				TweenService:Create(DropdownContent, TweenInfo.new(0.15), {Size = DropToggle and DropdownSize or UDim2.fromScale(1,0)}):Play()
+				TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (DropdownSize + UDim2.fromOffset(0,35)) or (UDim2.fromScale(1,0) + UDim2.fromOffset(0,30))}):Play()
+			end)
+
+			local MenuAdded, MenuButton = TryAddMenu(DropdownBar, Menu, {})
+
+			if MenuAdded then
+				DropdownToggle.Position = DropdownToggle.Position - UDim2.fromOffset(25,0)
+				MenuButton.ImageColor3 = Theme.DropdownAccent
+			end
+
+			local DropdownLibrary = {}
+
+			function DropdownLibrary:SetText(Value)
+				DropdownTitle.Text = Value
+			end
+
+			function DropdownLibrary:GetText()
+				return DropdownTitle.Text
+			end
+
+            function DropdownLibrary:GetValue()
+                return DropdownValue
+            end
+
+			function DropdownLibrary:SetOptions(NewMenu)
+				DropdownOptions = NewMenu or {}
+				NumberOfOptions = #DropdownOptions
+				DropdownSize = UDim2.fromScale(1,0) + UDim2.fromOffset(0,(NumberOfOptions*20) + ((NumberOfOptions - 1) * 5))
+
+				if DropdownContent then
+					DropdownContent:Destroy()
+				end
+
+				TweenService:Create(Dropdown, TweenInfo.new(0.15), {Size = DropToggle and (DropdownSize + UDim2.fromOffset(0,35)) or (UDim2.fromScale(1,0) + UDim2.fromOffset(0,30))}):Play()
+
+				DropdownContent = Objects.new("Frame")
+				DropdownContent.Name = "Content"
+				DropdownContent.Size = DropToggle and DropdownSize or UDim2.fromScale(1,0)
+				DropdownContent.Position = UDim2.fromOffset(0,35)
+				DropdownContent.ClipsDescendants = true
+				DropdownContent.Parent = Dropdown
+
+				local DropdownList = Objects.new("UIListLayout")
+				DropdownList.SortOrder = Enum.SortOrder.LayoutOrder
+				DropdownList.Padding = UDim.new(0,5)
+				DropdownList.Parent = DropdownContent
+
+				table.foreach(DropdownOptions, function(_, Value)
+					local NewButton = CreateNewButton({
+						Text = Value,
+						Callback = function() end
+					}, DropdownContent)
+
+					NewButton.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
+					NewButton.MouseButton1Down:Connect(function()
+						DropdownCallback(Value)
+						DropdownTitle.Text = DropdownText..": "..Value
+                        DropdownValue = Value
+					end)
+				end)
+			end
+
+			function DropdownLibrary:GetOptions()
+				return DropdownOptions
+			end
+
+			if DropdownOptions.Default then
+				DropdownTitle.Text = DropdownText..": "..DropdownOptions.Default
+			end
+
+			return DropdownLibrary
+		end
 
 		function OptionLibrary.ChipSet(ChipSetConfig)
 			local ChipSetText = ChipSetConfig.Text or "nil chipset"
