@@ -844,56 +844,54 @@ function Material.Load(Config)
 	end)
 
 	----------------------------------------------------
-	local MinimiseButton = Objects.new("SmoothButton")
-MinimiseButton.Size = UDim2.fromOffset(20, 20)
-MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MinimiseButton.ImageColor3 = Theme.Minimise
-MinimiseButton.ImageTransparency = 1
-MinimiseButton.Parent = TitleBar
+	local MinimizeButton = Objects.new("SmoothButton")
+MinimizeButton.Size = UDim2.fromOffset(20, 20)
+MinimizeButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
+MinimizeButton.ImageColor3 = Theme.Minimise
+MinimizeButton.ImageTransparency = 1
+MinimizeButton.Parent = MainFrame
 
-local MinimiseShadow = Objects.new("Shadow")
-MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
-MinimiseShadow.ImageTransparency = 1
-MinimiseShadow.Parent = MinimiseButton
+local MinimizeShadow = Objects.new("Shadow")
+MinimizeShadow.ImageColor3 = Theme.MinimiseAccent
+MinimizeShadow.ImageTransparency = 1
+MinimizeShadow.Parent = MinimizeButton
 
-local MaximiseButton = Objects.new("SmoothButton")
-MaximiseButton.Size = UDim2.fromOffset(20, 20)
-MaximiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
-MaximiseButton.ImageColor3 = Theme.Maximise
-MaximiseButton.ImageTransparency = 1
-MaximiseButton.Visible = false
-MaximiseButton.Parent = MainFrame
+local MaximizeButton = Objects.new("SmoothButton")
+MaximizeButton.Size = UDim2.fromOffset(20, 20)
+MaximizeButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
+MaximizeButton.ImageColor3 = Theme.Maximise
+MaximizeButton.ImageTransparency = 1
+MaximizeButton.Visible = false
+MaximizeButton.Parent = MainFrame
 
-local MaximiseShadow = Objects.new("Shadow")
-MaximiseShadow.ImageColor3 = Theme.MaximiseAccent
-MaximiseShadow.ImageTransparency = 1
-MaximiseShadow.Parent = MaximiseButton
+local MaximizeShadow = Objects.new("Shadow")
+MaximizeShadow.ImageColor3 = Theme.MaximiseAccent
+MaximizeShadow.ImageTransparency = 1
+MaximizeShadow.Parent = MaximizeButton
 
-MinimiseButton.MouseButton1Down:Connect(function()
+MinimizeButton.MouseButton1Down:Connect(function()
     if TitleBar.Visible then
         TitleBar.Visible = false
         MainFrame.ClipsDescendants = true
-        TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Maximise}):Play()
-        TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MaximiseAccent}):Play()
-        MaximiseButton.Visible = true
+        TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Maximise}):Play()
+        TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MaximiseAccent}):Play()
+        MaximizeButton.Visible = true
     else
         TitleBar.Visible = true
         MainFrame.ClipsDescendants = false
-        TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
-        TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
-        MaximiseButton.Visible = false
+        TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
+        TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
+        MaximizeButton.Visible = false
     end
 end)
 
-MaximiseButton.MouseButton1Down:Connect(function()
+MaximizeButton.MouseButton1Down:Connect(function()
     TitleBar.Visible = true
     MainFrame.ClipsDescendants = false
-    TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
-    TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
-    MaximiseButton.Visible = false
+    TweenService:Create(MinimizeButton, TweenInfo.new(0.15), {ImageColor3 = Theme.Minimise}):Play()
+    TweenService:Create(MinimizeShadow, TweenInfo.new(0.15), {ImageColor3 = Theme.MinimiseAccent}):Play()
+    MaximizeButton.Visible = false
 end)
-
-
 
 --------------------------------------------------------------
 
