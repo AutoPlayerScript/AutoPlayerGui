@@ -675,7 +675,7 @@ function TryAddMenu(Object, Menu, ReturnTable)
 				MenuOption.MouseButton1Down:Connect(function()
 					Value(ReturnTable)
 					MenuToggle = false
-					TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(12,0)}):Play()
+					TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(120,0)}):Play()
 				end)
 
 				MenuOption.MouseEnter:Connect(function()
@@ -843,86 +843,105 @@ function Material.Load(Config)
 		end)
 	end)
 
+	----------------------------
 	local MinimiseButton = Objects.new("SmoothButton")
-	MinimiseButton.Size = UDim2.fromOffset(20,20)
-	MinimiseButton.Position = UDim2.fromScale(1,0) + UDim2.fromOffset(-25,5)
-	MinimiseButton.ImageColor3 = Theme.Minimise
-	MinimiseButton.ImageTransparency = 1
-	MinimiseButton.Parent = TitleBar
+MinimiseButton.Size = UDim2.fromOffset(20, 20)
+MinimiseButton.Position = UDim2.fromScale(1, 0) + UDim2.fromOffset(-25, 5)
+MinimiseButton.ImageColor3 = Theme.Minimise
+MinimiseButton.ImageTransparency = 1
+MinimiseButton.Parent = TitleBar
 
-	local MinimiseShadow = Objects.new("Shadow")
-	MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
-	MinimiseShadow.ImageTransparency = 1
-	MinimiseShadow.Parent = MinimiseButton
+local MinimiseShadow = Objects.new("Shadow")
+MinimiseShadow.ImageColor3 = Theme.MinimiseAccent
+MinimiseShadow.ImageTransparency = 1
+MinimiseShadow.Parent = MinimiseButton
 
-	MinimiseButton.MouseButton1Down:Connect(function()
-		Open = not Open
-		TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 1}):Play()
-		TweenService:Create(MainFrame, TweenInfo.new(0.15), {Size = Open and UDim2.fromOffset(SizeX,SizeY) or UDim2.fromOffset(SizeX,30)}):Play()
-		TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.Minimise or Theme.Maximise}):Play()
-		TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {ImageColor3 = Open and Theme.MinimiseAccent or Theme.MaximiseAccent}):Play()
-		if Open then
-			wait(0.15)
-			MainFrame.ClipsDescendants = false
-			TweenService:Create(MainShadow, TweenInfo.new(0.15), {ImageTransparency = 0}):Play()
-		else
-			MainFrame.ClipsDescendants = true
-		end
-	end)
+local GUIVisible = true
 
-	local Content = Objects.new("Round")
-	Content.Name = "Content"
-	Content.ImageColor3 = Theme.Content
-	Content.Size = UDim2.fromScale(1,1) - UDim2.fromOffset(10,75)
-	Content.Position = UDim2.fromOffset(5,70)
-	Content.ImageTransparency = 1
-	Content.Parent = MainFrame
+MinimiseButton.MouseButton1Down:Connect(function()
+    GUIVisible = not GUIVisible
 
-	local NavigationBar, NavigationBarContent, NavBarMenu, NavBarOverlay = NavBar[Styles[Style]]()
-	NavigationBar.Parent = MainFrame
+    TweenService:Create(MainFrame, TweenInfo.new(0.15), {
+        Size = GUIVisible and UDim2.fromOffset(SizeX, SizeY) or UDim2.fromOffset(SizeX, 30)
+    }):Play()
 
-	TweenService:Create(TitleBar, TweenInfo.new(1), {ImageTransparency = 0}):Play()
-	TweenService:Create(ExtraBar, TweenInfo.new(1), {BackgroundTransparency = 0}):Play()
-	TweenService:Create(TitleShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
-	TweenService:Create(TitleText, TweenInfo.new(1), {TextTransparency = 0}):Play()
-	TweenService:Create(MinimiseButton, TweenInfo.new(1), {ImageTransparency = 0}):Play()
-	TweenService:Create(MinimiseShadow, TweenInfo.new(1), {ImageTransparency = 0}):Play()
-	TweenService:Create(Content, TweenInfo.new(1), {ImageTransparency = 0.8}):Play()
+    TweenService:Create(Content, TweenInfo.new(0.15), {
+        ImageTransparency = GUIVisible and 0.8 or 1
+    }):Play()
 
-	wait(1)
+    TweenService:Create(MinimiseButton, TweenInfo.new(0.15), {
+        ImageColor3 = GUIVisible and Theme.Minimise or Theme.Maximise
+    }):Play()
 
-	if NavBarMenu then
-		TweenService:Create(TitleText, TweenInfo.new(0.5), {
-			Size = TitleText.Size - UDim2.fromOffset(25,0),
-			Position = TitleText.Position + UDim2.fromOffset(25,0)
-		}):Play()
-		TweenService:Create(Content, TweenInfo.new(0.5), {
-			Size = Content.Size + UDim2.fromOffset(0,35),
-			Position = Content.Position - UDim2.fromOffset(0,35)
-		}):Play()
+    TweenService:Create(MinimiseShadow, TweenInfo.new(0.15), {
+        ImageColor3 = GUIVisible and Theme.MinimiseAccent or Theme.MaximiseAccent
+    }):Play()
 
-		NavBarMenu.ImageTransparency = 1
-		NavBarMenu.Parent = TitleBar
+    if GUIVisible then
+        wait(0.15)
+        MainFrame.ClipsDescendants = false
+        TweenService:Create(MainShadow, TweenInfo.new(0.15), {
+            ImageTransparency = 0
+        }):Play()
+    else
+        MainFrame.ClipsDescendants = true
+    end
+end)
 
-		TweenService:Create(NavBarMenu, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+local Content = Objects.new("Round")
+Content.Name = "Content"
+Content.ImageColor3 = Theme.Content
+Content.Size = UDim2.fromScale(1, 1) - UDim2.fromOffset(10, 75)
+Content.Position = UDim2.fromOffset(5, 70)
+Content.ImageTransparency = 1
+Content.Parent = MainFrame
 
-		NavBarOverlay.Parent = MainFrame
+local NavigationBar, NavigationBarContent, NavBarMenu, NavBarOverlay = NavBar[Styles[Style]]()
+NavigationBar.Parent = MainFrame
 
-		local MenuToggle = false
+TweenService:Create(TitleBar, TweenInfo.new(1), { ImageTransparency = 0 }):Play()
+TweenService:Create(ExtraBar, TweenInfo.new(1), { BackgroundTransparency = 0 }):Play()
+TweenService:Create(TitleShadow, TweenInfo.new(1), { ImageTransparency = 0 }):Play()
+TweenService:Create(TitleText, TweenInfo.new(1), { TextTransparency = 0 }):Play()
+TweenService:Create(MinimiseButton, TweenInfo.new(1), { ImageTransparency = 0 }):Play()
+TweenService:Create(MinimiseShadow, TweenInfo.new(1), { ImageTransparency = 0 }):Play()
+TweenService:Create(Content, TweenInfo.new(1), { ImageTransparency = 0.8 }):Play()
 
-		NavBarMenu.MouseButton1Down:Connect(function()
-			MenuToggle = not MenuToggle
-			TweenService:Create(NavigationBar, TweenInfo.new(0.15), {Size = (MenuToggle and UDim2.fromScale(0.5,1) or UDim2.fromScale(0,1)) - UDim2.fromOffset(0,30)}):Play()
-			TweenService:Create(NavBarOverlay, TweenInfo.new(0.15), {BackgroundTransparency = MenuToggle and 0.5 or 1}):Play()
-			if MenuToggle then
-				wait(0.15)
-				NavigationBar.ClipsDescendants = false
-			else
-				NavigationBar.ClipsDescendants = true
-			end
-		end)
-	end
+wait(1)
 
+if NavBarMenu then
+    TweenService:Create(TitleText, TweenInfo.new(0.5), {
+        Size = TitleText.Size - UDim2.fromOffset(25, 0),
+        Position = TitleText.Position + UDim2.fromOffset(25, 0)
+    }):Play()
+    TweenService:Create(Content, TweenInfo.new(0.5), {
+        Size = Content.Size + UDim2.fromOffset(0, 35),
+        Position = Content.Position - UDim2.fromOffset(0, 35)
+    }):Play()
+
+    NavBarMenu.ImageTransparency = 1
+    NavBarMenu.Parent = TitleBar
+
+    TweenService:Create(NavBarMenu, TweenInfo.new(0.5), { ImageTransparency = 0 }):Play()
+
+    NavBarOverlay.Parent = MainFrame
+
+    local MenuToggle = false
+
+    NavBarMenu.MouseButton1Down:Connect(function()
+        MenuToggle = not MenuToggle
+        TweenService:Create(NavigationBar, TweenInfo.new(0.15), { Size = (MenuToggle and UDim2.fromScale(0.5, 1) or UDim2.fromScale(0, 1)) - UDim2.fromOffset(0, 30) }):Play()
+        TweenService:Create(NavBarOverlay, TweenInfo.new(0.15), { BackgroundTransparency = MenuToggle and 0.5 or 1 }):Play()
+        if MenuToggle then
+            wait(0.15)
+            NavigationBar.ClipsDescendants = false
+        else
+            NavigationBar.ClipsDescendants = true
+        end
+    end)
+end
+
+-------------------------
 	local TabCount = 0
 
 	local TabLibrary = {}
