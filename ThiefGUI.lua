@@ -888,16 +888,17 @@ MinimiseButton.MouseButton1Down:Connect(function()
     end
 
     -- Ẩn các thành phần khác
-    TitleBar.Visible = not GUIVisible
-    ExtraBar.Visible = not GUIVisible
-    TitleShadow.Visible = not GUIVisible
-    TitleText.Visible = not GUIVisible
-    Content.Visible = not GUIVisible
+    TitleBar.Visible = GUIVisible
+    ExtraBar.Visible = GUIVisible
+    TitleShadow.Visible = GUIVisible
+    TitleText.Visible = GUIVisible
+    Content.Visible = GUIVisible
     if NavBarMenu then
-        NavBarMenu.Visible = not GUIVisible
-        NavBarOverlay.Visible = not GUIVisible
+        NavBarMenu.Visible = GUIVisible
+        NavBarOverlay.Visible = GUIVisible
     end
 end)
+
 
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
