@@ -1173,8 +1173,8 @@ function Material.Load(Config)
 
 			return ButtonLibrary
 		end
-
-		function OptionLibrary.Dropdown(DropdownConfig)
+--------------------------------------------------------------------------------------------------------------
+function OptionLibrary.Dropdown(DropdownConfig)
     local DropdownText = DropdownConfig.Text or "nil dropdown"
     local DropdownValue = DropdownConfig.Default
     local DropdownCallback = DropdownConfig.Callback or function() print("nil dropdown") end
@@ -1193,7 +1193,7 @@ function Material.Load(Config)
     DropdownBar.ImageTransparency = 1
     DropdownBar.Parent = Dropdown
 
-    local DropdownTitle = Objects.new("TextBox")  -- Đổi Button thành TextBox
+    local DropdownTitle = Objects.new("TextBox")
     DropdownTitle.Name = "Title"
     DropdownTitle.Font = Enum.Font.GothamSemibold
     DropdownTitle.Text = DropdownValue and DropdownText..": "..DropdownValue or DropdownText
@@ -1248,6 +1248,56 @@ function Material.Load(Config)
         end
     end)
 
+    local FilteredOptions = DropdownOptions
+
+    local function RefreshDropdownList()
+        for _, button in ipairs(DropdownContent:GetChildren()) do
+            if button:IsA("TextButton") then
+                button:Destroy()
+            end
+        end
+
+        for _, value in ipairs(FilteredOptions) do
+            local NewButton = CreateNewButton({
+                Text = value,
+                Callback = function() end
+            }, DropdownContent)
+
+            NewButton.Size = UDim2.fromScale(1,0) + UDim2.fromOffset(0,20)
+            NewButton.MouseButton1Down:Connect(function()
+                DropdownCallback(value)
+                DropdownTitle.Text = DropdownText..": "..value
+                DropdownValue = value
+            end)
+        end
+    end
+
+    local SearchBox = Objects.new("TextBox")
+    SearchBox.Name = "SearchBox"
+    SearchBox.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
+    SearchBox.Position = UDim2.fromOffset(0, 35)
+    SearchBox.Font = Enum.Font.Gotham
+    SearchBox.TextColor3 = Theme.DropdownAccent
+    SearchBox.TextSize = 14
+    SearchBox.PlaceholderText = "Search..."
+    SearchBox.TextTransparency = 1
+    SearchBox.Parent = DropdownBar
+
+    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+        local keyword = SearchBox.Text:lower()
+        if keyword == "" then
+            FilteredOptions = DropdownOptions
+        else
+            FilteredOptions = {}
+            for _, value in ipairs(DropdownOptions) do
+                if string.find(value:lower(), keyword) then
+                    table.insert(FilteredOptions, value)
+                end
+            end
+        end
+        RefreshDropdownList()
+    end)
+
     table.foreach(DropdownOptions, function(_, Value)
         local NewButton = CreateNewButton({
             Text = Value,
@@ -1260,35 +1310,6 @@ function Material.Load(Config)
             DropdownTitle.Text = DropdownText..": "..Value
             DropdownValue = Value
         end)
-    end)
-
-    -- Thêm sự kiện tìm kiếm từ TextBox
-    local SearchBox = Objects.new("TextBox")
-    SearchBox.Name = "SearchBox"
-    SearchBox.Size = UDim2.fromScale(1, 0) + UDim2.fromOffset(0, 20)
-    SearchBox.Position = UDim2.fromOffset(0, 35)
-    SearchBox.Font = Enum.Font.Gotham
-    SearchBox.TextColor3 = Theme.DropdownAccent
-    SearchBox.TextSize = 14
-    SearchBox.PlaceholderText = "Search..."
-    SearchBox.TextTransparency = 1
-    SearchBox.Parent = DropdownBar
-
-    local function FilterOptions(keyword)
-        for _, button in ipairs(DropdownContent:GetChildren()) do
-            if button:IsA("TextButton") then
-                if string.match(button.Text:lower(), keyword:lower()) then
-                    button.Visible = true
-                else
-                    button.Visible = false
-                end
-            end
-        end
-    end
-
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        local keyword = SearchBox.Text
-        FilterOptions(keyword)
     end)
 
     DropdownTitle.MouseButton1Down:Connect(function()
@@ -1318,6 +1339,7 @@ function Material.Load(Config)
     return DropdownLibrary
 end
 
+-----------------------------------------
 
 		function OptionLibrary.ChipSet(ChipSetConfig)
 			local ChipSetText = ChipSetConfig.Text or "nil chipset"
