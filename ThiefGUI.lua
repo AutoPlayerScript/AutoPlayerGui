@@ -675,7 +675,7 @@ function TryAddMenu(Object, Menu, ReturnTable)
 				MenuOption.MouseButton1Down:Connect(function()
 					Value(ReturnTable)
 					MenuToggle = false
-					TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(120,0)}):Play()
+					TweenService:Create(MenuBuild, TweenInfo.new(0.15), {Size = UDim2.fromOffset(12,0)}):Play()
 				end)
 
 				MenuOption.MouseEnter:Connect(function()
